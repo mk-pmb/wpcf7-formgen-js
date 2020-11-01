@@ -8,6 +8,7 @@
   function soon(f) { setTimeout(f, 10); }
   function formEl(name) { return document.forms.gen[name]; }
   function getSelectedItem(l) { return l.options[l.selectedIndex].value; }
+  function byId(id) { return (document.getElementById(id) || false); }
 
   function fetchFileText(url) {
     url = url + '?ts=' + unixtime();
@@ -26,23 +27,94 @@
     setCodeOutput('formCode', 'Error: ' + err);
   }
 
-  function recvFormsList(dirIndexHtml) {
-    var list = formEl('formsList'), opts = '';
-    dirIndexHtml.replace(/<a href="([#-~]+)\.txt">/g, function found(m, n) {
-      opts += ('\n  <option>' + n.replace(/[<>&]/g, '') + '</option>');
-      return m;
+  function scanTxtFileBasenamesInDir(url) {
+    return fetchFileText(url).then(function scanDir(html) {
+      var files = [];
+      html.replace(/<a href="([,-~]+)\.txt">/g, function found(m, n) {
+        files.push(m && n.replace(/[<>&]/g, ''));
+      });
+      if (files.length) {
+        files.sort();
+        return files;
+      }
+      throw new Error('Found no text files in ' + url + '!\n\n' + html);
     });
-    if (!opts) { throw new Error('Found no forms!\n' + dirIndexHtml); }
-    list.innerHTML = opts + '\n';
+  }
+
+  function recvFormsList(files) {
+    var list = formEl('formsList');
+    list.innerHTML = '\n' + files.map(function fmt(n) {
+      return '    <option>' + n + '</option>\n';
+    }).join('');
     list.selectedIndex = 0;
   }
 
   function requestFormsList() {
     formEl('formsList').innerHTML = '<option>…</option>';
-    fetchFileText('local/forms/').then(recvFormsList).then(null, panic);
+    scanTxtFileBasenamesInDir('local/forms/').then(recvFormsList
+      ).then(null, panic);
   }
   formEl('scanForms').onclick = requestFormsList;
   soon(requestFormsList);
+
+  function recvListItems(dt, data) {
+    var items = [], fails = [], dd = dt.nextSibling;
+    if (!dd) { return; }
+    data = data.split(/\n/);
+    dt.rawLines = data;
+    data.forEach(function parse(ln, idx) {
+      ln = ln.trim();
+      if (!ln) { return; }
+      if (ln.startsWith('#')) { return; }
+      try {
+        items.push(JSON.parse(ln));
+      } catch (jsonErr) {
+        if (fails.length < 5) {
+          fails.push('<p>invalid JSON in line ' + (idx + 1) + '</p>');
+        }
+      }
+    });
+    dd.items = items;
+    dd.setAttribute('n', items.length);
+    dd.innerHTML = fails.join('\n    ');
+    dt.className = (fails.length ? 'failed' : 'ready');
+  }
+
+  function requestListItems(dt) {
+    function fail(err) {
+      dt.className = 'failed';
+      return panic(err);
+    }
+    fetchFileText(dt.firstChild.href).then(recvListItems.bind(null, dt)
+      ).then(null, fail);
+  }
+
+  function recvListOfLists(files) {
+    var lol = byId('knownLists'), el, bfn;
+    lol.file2dt = {};
+    lol.innerHTML = '\n' + files.map(function fmt(n) {
+      return ('    <dt><a href="local/lists/' + n + '.txt" target="_blank">'
+        + n + '</a></dt><dd n=0></dd>\n');
+    }).join('');
+    el = lol.firstChild;
+    while (el) {
+      el = el.nextSibling;
+      if (el && el.tagName && (el.tagName.toLowerCase() === 'dt')) {
+        bfn = el.innerText;
+        lol.file2dt[bfn] = el;
+        soon(requestListItems.bind(null, el));
+        el.className = 'fetching';
+      }
+    }
+  }
+
+  function requestListOfLists() {
+    byId('knownLists').innerHTML = '<dt class="loading">…</dt><dd></dd>';
+    scanTxtFileBasenamesInDir('local/lists/').then(recvListOfLists
+      ).then(null, panic);
+  }
+  formEl('scanLists').onclick = requestListOfLists;
+  soon(requestListOfLists);
 
   function parseArgsList(input) {
     var list = [], key, val, rxKey = /^(\w+):\s*/,

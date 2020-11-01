@@ -1,7 +1,20 @@
 ﻿@charset "UTF-8";
 /* -*- coding: UTF-8, tab-width: 2 -*- */
 
-h2, p, ul { margin: 0; }
+h2, p, dl, ul { margin: 0; }
+a { color: royalblue; text-decoration: none; }
+a:hover { color: skyblue; text-decoration: underline; }
 fieldset { float: left; }
 h2, fieldset { margin: 1em; }
 textarea.result-code { width: 30em; height: 10em; resize: both; }
+
+#knownLists { white-space: nowrap; }
+#knownLists dt, #knownLists dd { float: left; margin: 0; }
+
+#knownLists dt { clear: both; font-family: monospace; margin-right: 1ex;
+  margin-bottom: 0.2ex; }
+#knownLists dt:before { content: "\26D0  "; }
+#knownLists dt.fetching:before { content: "\2615  "; }
+#knownLists dt.ready:before { content: "\2714  "; }
+#knownLists dd { font-size: 80%; min-width: 3em; }
+#knownLists dd:before { content: "(" attr(n) ")"; }
