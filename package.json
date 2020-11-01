@@ -1,0 +1,21 @@
+{ "name": "wpcf7-formgen",
+  "version": "0.0.1",
+  "description": "Code generator for nicer forms in Wordpress Contact Form 7",
+  "keywords": [],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/wpcf7-formgen-js/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/wpcf7-formgen-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/wpcf7-formgen-js/issues"
+  },
+  "contributors": [],
+
+  "private": false, "license": "ISC",
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
