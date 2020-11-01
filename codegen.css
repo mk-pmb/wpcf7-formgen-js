@@ -1,0 +1,7 @@
+﻿@charset "UTF-8";
+/* -*- coding: UTF-8, tab-width: 2 -*- */
+
+h2, p, ul { margin: 0; }
+fieldset { float: left; }
+h2, fieldset { margin: 1em; }
+textarea.result-code { width: 30em; height: 10em; resize: both; }

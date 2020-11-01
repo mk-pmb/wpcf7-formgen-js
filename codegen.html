@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Konfo-Codegenerator</title>
+  <meta http-equiv="Content-Script-Type" content="text/javascript">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <style>
+    @import url("codegen.css");
+    @import url("local/codegen.css");
+  </style>
+</head><body>
+
+<form name="gen" action="nope://" method="get">
+
+<fieldset><legend>Formularvorlagen
+  <input type="button" name="scanForms" value="aktual."></legend>
+  <p><select name="formsList" size="10"></select></p>
+  <p><input type="button" name="renderForm" value="Codes erstellen"></p>
+</fieldset>
+
+<fieldset><legend>Formular-Code</legend>
+<textarea class="result-code" name="formCode" wrap="off"></textarea>
+</fieldset>
+
+<fieldset><legend>E-Mail: Nachrichtentext</legend>
+<textarea class="result-code" name="mailTextCode" wrap="off"></textarea>
+</fieldset>
+
+<fieldset><legend>E-Mail: Dateianhänge</legend>
+<textarea class="result-code" name="mailFilesCode" wrap="off"></textarea>
+</fieldset>
+
+
+
+
+
+
+
+
+
+</form>
+
+<script src="codegen.js"></script>
+
+</body></html>
